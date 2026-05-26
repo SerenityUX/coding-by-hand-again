@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<html>
+    <body>
+        <div style="display: flex; flex-direction: column; border: 1px solid #000; width: fit-content">
+        <div class="row">
+            <div class="box">
+                <p id=1></p>
+            </div>
+            <div class="box">
+                <p id=2></p>
+            </div>
+            <div class="box">
+                <p id=3></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box">
+                <p id=4></p>
+            </div>
+            <div class="box">
+                <p id=5></p>
+            </div>
+            <div class="box">
+                <p id=6></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="box">
+                <p id=7></p>
+            </div>
+            <div class="box">
+                <p id=8></p>
+            </div>
+            <div class="box">
+                <p id=9></p>
+            </div>
+        </div>
+        </div>
+    </body>
+
+    <style>
+        .box {
+            width: 100px;
+            height: 100px;
+            display: "flex";
+            border: 1px solid #000;
+            background-color: #fff;
+            transition:all 0.2s;
+            cursor: pointer;
+        }
+        .box:hover {
+            background-color: aliceblue;
+        }
+
+        .box p {
+            width: 100px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px
+        }
+        .row {
+            display: flex;
+            flex-direction: row;
+        }
+    </style>
+
+    <script>
+        console.log("Hello world")
+
+        let turn = "o"
+        let win = ""
+
+        let board = ["", "", "", "", "", "", "", "", ""]
+    
+        function renderMoves() {
+            checkForWin()
+            
+            if(win != "") {
+                document.body.innerHTML = `${win} won the game`
+            } else {             
+                for (let index = 1; index < 10; index++) {
+                    const box = document.getElementById(index)
+                    
+                    box.innerText = board[index - 1]
+
+                    
+
+                }
+            }
+        }    
+            
+        
+
+        function checkForWin() {
+            rows = [
+                [board[0], board[1], board[2]],
+                [board[3], board[4], board[5]],
+                [board[6], board[7], board[8]]
+                ]
+            rows.forEach(row => {
+                if(row.join("") == "xxx") {
+                    console.log("X Won")
+                    win = "x"
+                } else if (row.join("") == "ooo") {
+                    console.log("O Won")
+                    win = "o"
+                }
+                console.log(row)
+            });
+
+            columns = [
+                [board[0], board[3], board[6]],
+                [board[1], board[4], board[7]],
+                [board[2], board[5], board[8]]
+                ]
+            columns.forEach(column => {
+                if(column.join("") == "xxx") {
+                    console.log("X Won")
+                    win = "x"
+                } else if (column.join("") == "ooo") {
+                    console.log("O Won")
+                    win = "o"
+                }
+            });
+
+            diagonals = [
+                [board[0], board[4], board[8]],
+                [board[2], board[4], board[6]]
+            ]
+
+            diagonals.forEach(diagonal => {
+                if(diagonal.join("") == "xxx") {
+                    console.log("X Won")
+                    win = "x"
+                } else if (diagonal.join("") == "ooo") {
+                    console.log("O Won")
+                    win = "o"
+                }
+
+            });
+        }
+
+
+        function makeMove(box) {
+            if(board[box] == "") {
+                board[box] = turn
+
+                renderMoves()
+
+                if(turn == "o") {
+                    turn = "x"
+                } else {
+                    turn = "o"
+                }
+            } 
+        }
+
+        board.forEach((element, index) => {
+            const box = document.getElementById(index + 1)
+            box.addEventListener("click", () => makeMove(index))
+        });
+
+        renderMoves()
+
+
+
+    </script>
+</html>

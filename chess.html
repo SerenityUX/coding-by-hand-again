@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html>
+    <body>
+        <div id="board" style="display: flex; flex-direction: column; border: 1px solid #000; width: fit-content"></div>
+    </body>
+
+    <style>
+        .box {
+            width: 100px;
+            height: 100px;
+            display: "flex";
+            border: 1px solid #000;
+            background-color: #fff;
+            transition:all 0.2s;
+            cursor: pointer;
+        }
+
+        .box p {
+            width: 100px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px
+        }
+        .row {
+            display: flex;
+            flex-direction: row;
+        }
+
+        
+    </style>
+
+    <script>
+        const board = document.getElementById("board")
+
+        let turn = "white"
+        let selectedPiece = [null, null]
+    
+        const currentboard = [
+            ["rook-b", "knight-b", "bishop-b", "king-b", "queen-b", "bishop-b", "knight-b", "rook-b"],
+            ["pawn-b", "pawn-b", "pawn-b", "pawn-b", "pawn-b", "pawn-b", "pawn-b", "pawn-b"],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["", "", "", "", "", "", "", ""],
+            ["pawn-w", "pawn-w", "pawn-w", "pawn-w", "pawn-w", "pawn-w", "pawn-w", "pawn-w"],
+            ["rook-w", "knight-w", "bishop-w", "king-w", "queen-w", "bishop-w", "knight-w", "rook-w"],
+
+
+
+        ]
+        function renderBoard() {
+            board.innerHTML = ""
+
+            for (let row = 0; row < 8; row++) {
+                rowContent = `<div class="row">`
+                for (let col = 0; col < 8; col++) {
+                    rowContent += `<div class="box" style="background-color: ${((row % 2 && col % 2) || !(row % 2 || col % 2)) ? "white" : "grey"}; border: ${(selectedPiece[0] == row && selectedPiece[1] == col) ? "2px solid red" : "2px solid #000"};" id="${row}, ${col}, ${((row % 2 && col % 2) || !(row % 2 || col % 2)) ? "white" : "black"}"><img style="width: 100px; height: 100px" ${currentboard[row][col] != "" && `src="./chess-pieces/${currentboard[row][col]}.svg`}"/></div>`
+                }
+                rowContent += "</div>"
+
+                board.innerHTML += rowContent
+
+            }
+
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    boxElement = document.getElementById(`${row}, ${col}, ${((row % 2 && col % 2) || !(row % 2 || col % 2)) ? "white" : "black"}`)
+                    boxElement.addEventListener("click", () => clickBoard(row, col))
+                }
+            }
+        }
+
+        function clickBoard(x, y) {
+            if(turn[0] == currentboard[x][y].split("")[currentboard[x][y].length - 1]) {
+                selectPiece(x, y)
+            } else {
+                console.log(selectedPiece)
+                if(selectedPiece[0] != null) {
+                    attemptMove(x, y)
+                }
+            }
+        }
+        function selectPiece(x, y) {
+
+            selectedPiece = [x, y]
+            console.log([x, y])
+            renderBoard()
+            
+
+        }
+
+        function attemptMove(x, y) {
+            console.log("attempted-move")
+
+            const thePiece = currentboard[selectedPiece[0]][selectedPiece[1]]
+            const landingPiece = currentboard[x][y]
+            const color = thePiece[thePiece.length - 1]
+            let validMove = false
+
+            if(thePiece.includes("pawn")) {
+                if(((color == "w" && x == selectedPiece[0] - 1) || (color == "b" && x == selectedPiece[0] + 1)) && selectedPiece[1] == y && currentboard[x][y] == "") {
+                    validMove = true
+                } else if(((color == "w" && x == selectedPiece[0] - 1) || (color == "b" && x == selectedPiece[0] + 1)) && (selectedPiece[1] == y + 1 || selectedPiece[1] == y - 1) && currentboard[x][y] != "") {
+                    validMove = true
+                } else if(((color == "w" && x == 4 && (selectedPiece[0] == 6)) || (color == "b" && x == 3 && selectedPiece[0] == 1)) && currentboard[x][y] == "") {
+                    validMove = true
+                }
+            }
+
+            if(thePiece.includes("rook")) {
+                //allow it to move straight y direction
+                if((selectedPiece[0] == x && selectedPiece[1] != y) || (selectedPiece[0] != x && selectedPiece[1] == y)) {
+                    validMove = true
+
+                    for (let row = selectedPiece[0] + 1; row < x; row++) {
+                        if(currentboard[row][y] != "") {
+                            validMove = false
+
+                            console.log("something detected forwards", currentboard[row][y])
+                        }
+                        
+                    }
+
+                    for (let row = x  + 1; row < selectedPiece[0]; row++) {
+                        if(currentboard[row][y] != "") {
+                            validMove = false
+
+                            console.log("something detected forwards", currentboard[row][y])
+                        }
+                        
+                    }
+                    
+                }
+            }
+
+            if(validMove) {
+                    currentboard[selectedPiece[0]][selectedPiece[1]] = ""
+                    currentboard[x][y] = thePiece
+
+                    selectedPiece = [null, null]
+
+                    if(turn == "white") {
+                        turn = "black"
+                    } else {
+                        turn = "white"
+                    }
+                    renderBoard()
+                }
+
+
+
+
+
+        }
+
+        renderBoard() 
+        
+    </script>
+</html>
